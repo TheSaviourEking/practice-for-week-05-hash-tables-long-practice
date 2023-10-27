@@ -16,7 +16,7 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
     this.count = 0;
 
     // memoizing using a map to store already computed keys and values;
-    this.keyValues = new Map();
+    // this.keyValues = new Map();
   }
 
   hash(key) {
@@ -34,7 +34,8 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
     return this.hash(key) % this.capacity;
   }
 
-
+/**--------------------------------------------**
+  // ReImplementing Insert to be a complete hashTable without Set, and Map BELOW
   insert(key, value) {
     // Your code here
     let index = this.hashMod(key);
@@ -52,8 +53,32 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
       this.count++;
     }
   }
+  **------------------------------------------------------------*/
+  insert(key, value) {
+    const LOAD_FACTOR = 0.7
+    // Your code here
+    // Get index
+    if ((this.count / this.capacity) > LOAD_FACTOR) this.resize();
 
+    const index = this.hashMod(key);
+    let current = this.data[index];
+    while (current && current.key !== key) {
+      current = current.next;
+    }
+    if (current) {
+      current.value = value;
+      return;
+    }
+    else {
+      const keyValuePair = new KeyValuePair(key, value);
+      keyValuePair.next = this.data[index];
+      this.data[index] = keyValuePair;
+      this.count++;
+    }
+  }
 
+/**---------------------------------------------------------------
+// SAME WITH READ, NOT TO READ FROM MAP BELOW
   read(key) {
     // Your code here
     let index = this.hashMod(key);
@@ -62,8 +87,20 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
     }
     return undefined;
   }
+  **-------------------------------------------------------------------*/
+  // Your code here
+read(key) {
+    // Your code here
+    let index = this.hashMod(key);
+    let current = this.data[index];
+    while (current && current.key !== key) {
+      current = current.next;
+    }
+    return current ? current.value : undefined;
+  }
 
-
+  /**-----------------------------------------------------------
+  // RESIZE eithout using map too
   resize() {
     // Your code here
     let oldData = this.data;
@@ -80,8 +117,26 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
       }
     }
   }
+  ***_--------------------------------------------------*/
+  resize() {
+    // Your code here
+    let oldData = this.data;
+    this.capacity = this.capacity * 2;
+    this.count = 0;
+    this.data = new Array(this.capacity).fill(null);
+    for (let i = 0; i < oldData.length; i++) {
+      if (oldData[i]) {
+        let current = oldData[i];
+        while (current) {
+          this.insert(current.key, current.value);
+          current = current.next;
+        }
+      }
+    }
+    }
 
-
+/*---------------------------------------------------------------
+// REIMPLEMENTING DELETE NOT TO USE MAB BELOW
   delete(key) {
     // Your code here
     let index = this.hashMod(key);
@@ -102,6 +157,28 @@ class HashTable { // get O(1), set O(1), deleteKey O(1)
     } else {
       return 'Key not found';
     }
+  }
+  **--------------------------------------------------------------------*/
+
+delete(key) {
+    // Your code here
+    const index = this.hashMod(key);
+    let current = this.data[index];
+    let prev = null
+
+    while (current && current.key !== key) {
+      prev = current;
+      current = current.next;
+    }
+
+    if (!current) return 'Key not found';
+
+    if (prev) {
+      prev.next = current.next
+    } else {
+      this.data[index] = current.next;
+    }
+    this.count--;
   }
 }
 
