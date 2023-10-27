@@ -1,29 +1,31 @@
-let count = 0;
-let length = 0;
-const cache = {};
-const kth = (str, target) => {
-    function findKth() {
-        // console.log('RUNNING')
-        for (let i = 0; i < str.length; i++) {
-            if (str[i] in cache) {
-                cache[str[i]]++;
-            } else {
-                cache[str[i]] = 1;
-                length++;
+const kth = (function () {
+    let count = 0;
+    let length = 0;
+    const cache = {};
+    return function (str, target) {
+        function findKth() {
+            // console.log('RUNNING')
+            for (let i = 0; i < str.length; i++) {
+                if (str[i] in cache) {
+                    cache[str[i]]++;
+                } else {
+                    cache[str[i]] = 1;
+                    length++;
+                }
+            }
+        }
+
+        if (count === 0) {
+            findKth();
+            count++;
+        }
+        for (let key in cache) {
+            if (cache[key] === Math.ceil(length / target)) {
+                return key;
             }
         }
     }
-
-    if (count === 0) {
-        findKth();
-        count++;
-    }
-    for (let key in cache) {
-        if (cache[key] === Math.ceil(length / target)) {
-            return key;
-        }
-    }
-}
+})();
 
 // console.log(kth('aaabbc', 1));
 // console.log(kth('aaabbc', 2));
