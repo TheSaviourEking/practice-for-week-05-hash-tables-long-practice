@@ -89,28 +89,30 @@ const maxSubarr = (arr) => {
 // console.log(maxSubarr([1, 1, 1, 1]));
 
 // let coinsCount = [];
-let coinsCounter = {};
-const coinChange = (arr, totalAmount) => {
-    if (coinsCounter[totalAmount]) return coinsCounter[totalAmount];
+const coinChange = (function () {
+    let coinsCounter = {};
+    return function (arr, totalAmount) {
+        if (coinsCounter[totalAmount]) return coinsCounter[totalAmount];
 
-    if (arr.length === 1 && totalAmount < arr[0]) {
-        if (totalAmount === 0) return 0;
-        return -1;
-    }
+        if (arr.length === 1 && totalAmount < arr[0]) {
+            if (totalAmount === 0) return 0;
+            return -1;
+        }
 
-    for (let i = 0; i < arr.length; i++) {
-        coinsCounter[totalAmount] = 0
-        for (let j = 0; j < arr.length; j++) {
-            if (j !== i) {
-                if (arr[i] + arr[j] === totalAmount) {
-                    coinsCounter[totalAmount] += 2;
-                    return coinsCounter[totalAmount]
+        for (let i = 0; i < arr.length; i++) {
+            coinsCounter[totalAmount] = 0
+            for (let j = 0; j < arr.length; j++) {
+                if (j !== i) {
+                    if (arr[i] + arr[j] === totalAmount) {
+                        coinsCounter[totalAmount] += 2;
+                        return coinsCounter[totalAmount]
+                    }
                 }
             }
         }
-    }
-    return -1;
-};
+        return -1;
+    };
+})();
 
 // const coins = [1, 5, 10, 25];
 // const coins2 = [5];
